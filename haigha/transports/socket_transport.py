@@ -47,6 +47,8 @@ class SocketTransport(Transport):
         else:
             raise exc
 
+        self._bufsize = self._sock.getsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF)
+
         # After connecting, switch to full-blocking mode.
         self._sock.settimeout(None)
 
@@ -66,8 +68,7 @@ class SocketTransport(Transport):
                 self._sock.settimeout(timeout)
             else:
                 self._sock.settimeout(None)
-            data = self._sock.recv(
-                self._sock.getsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF))
+            data = self._sock.recv(self._bufsize)
 
             if len(data):
                 if self.connection.debug > 1:
